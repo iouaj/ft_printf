@@ -6,30 +6,32 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 17:24:00 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/15 18:09:47 by iouajjou         ###   ########.fr       */
+/*   Updated: 2023/11/17 12:17:29 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static void	int_to_hexa(long unsigned int nb, char *base)
+static int	int_to_hexa(unsigned int nb, char *base, int len)
 {
+	int	last;
+
+	last = 0;
 	if (nb / 16)
-		int_to_hexa(nb / 16, base);
+		last = int_to_hexa(nb / 16, base, len++);
 	ft_putchar_fd(base[nb % 16], 1);
+	return (len + last);
 }
 
-static size_t	lenhexa(int nb)
+static int	int_to_hexa_ptr(long unsigned int nb, char *base, int len)
 {
-	size_t	i;
+	int	last;
 
-	i = 0;
-	while (nb / 16)
-	{
-		nb = nb / 16;
-		i++;
-	}
-	return (i);
+	last = 0;
+	if (nb / 16)
+		last = int_to_hexa_ptr(nb / 16, base, len++);
+	ft_putchar_fd(base[nb % 16], 1);
+	return (len + last);
 }
 
 int	printptr(va_list *ap)
@@ -37,9 +39,13 @@ int	printptr(va_list *ap)
 	void	*ptr;
 
 	ptr = va_arg(*ap, void *);
+	if (!ptr)
+	{
+		ft_putstr_fd("(nil)", 1);
+		return (5);
+	}
 	ft_putstr_fd("0x", 1);
-	int_to_hexa((unsigned long)ptr, "0123456789abcdef");
-	return (lenhexa((long unsigned)ptr));
+	return (int_to_hexa_ptr((long unsigned int)ptr, "0123456789abcdef", 0) + 3);
 }
 
 int	printhexalo(va_list *ap, char *base)
@@ -47,6 +53,5 @@ int	printhexalo(va_list *ap, char *base)
 	int		nb;
 
 	nb = va_arg(*ap, int);
-	int_to_hexa(nb, base);
-	return (lenhexa(nb));
+	return (int_to_hexa(nb, base, 0) + 1);
 }

@@ -6,7 +6,7 @@
 /*   By: iouajjou <iouajjou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 13:48:55 by iouajjou          #+#    #+#             */
-/*   Updated: 2023/11/15 17:34:27 by iouajjou         ###   ########.fr       */
+/*   Updated: 2023/11/17 12:16:52 by iouajjou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,13 @@ int	printstring(va_list *ap)
 	char	*str;
 
 	str = va_arg(*ap, char *);
+	if (str == NULL)
+	{
+		ft_putstr_fd("(null)", 1);
+		return (6);
+	}
+	if (!str[0])
+		return (0);
 	ft_putstr_fd(str, 1);
 	return (ft_strlen(str));
 }
@@ -67,15 +74,20 @@ int	ft_printf(const char *format, ...)
 	size_t	i;
 	va_list	ap;
 	int		len;
+	int		cerror;
 
 	i = 0;
 	len = 0;
+	cerror = 0;
 	va_start(ap, format);
 	while (format[i])
 	{
 		if (format[i] == '%')
 		{
-			len += checkformat(format + i, &ap);
+			cerror = checkformat(format + i, &ap);
+			if (cerror == -1)
+				return (-1);
+			len += cerror;
 			i++;
 		}
 		else
@@ -85,14 +97,19 @@ int	ft_printf(const char *format, ...)
 	return (len);
 }
 
-// #include <stdio.h>
-// #include <limits.h>
+/*#include <stdio.h>
+#include <limits.h>
 
-// int main(void)
-// {
-// 	char *str = "Test 12452 Yo";
-// 	char c = 't';
-// 	int nb = 2147483647;
-// 	unsigned int nbu = 2147483660;
-// 	int hexa = 42;
-// }
+int main(void)
+{
+	char *str = "Test 12452 Yo";
+	char c = 't';
+	int nb = 2147483647;
+	unsigned int nbu = 2147483660;
+	int hexa = -12;
+	char *str_null = NULL;
+	int retour = ft_printf(" %s %s ", str_null, str_null);
+	printf("\n%d\n", retour);
+	int retour_printf = printf(" %s %s ", str_null, str_null);
+	printf("\n%d", retour_printf);
+}*/
